@@ -14,14 +14,23 @@ typedef struct{
 }Nodo;
 
 Nodo *CrearNodo(int id, const char *descripcion, int duracion);
-Nodo *CargarTareasPendientes();
 void InsertarNodo(Nodo ** lista, Nodo *nuevo);
+Nodo *CargarTareasPendientes();
+Nodo *QuitarTarea(Nodo ** lista, int id);
+Nodo *CrearListaVacia();
 
 int main (){
 
     srand(time(NULL));
+    Nodo *TareasPendientes = CrearListaVacia();
+    Nodo *TareasRealizadas = CrearListaVacia();
+
 
     return 0;
+}
+
+Nodo *CrearListaVacia(){
+    return NULL;
 }
 
 Nodo *CrearNodo(int id, const char *descripcion, int duracion) {
@@ -75,8 +84,8 @@ Nodo *QuitarTarea(Nodo ** lista, int id){
     if (actual == NULL){
         return NULL;
     }
-    if (anterior == NULL)
-    {
+
+    if (anterior == NULL){
         *lista = actual->siguiente;
     } else {
         anterior->siguiente = actual->siguiente;
@@ -84,4 +93,58 @@ Nodo *QuitarTarea(Nodo ** lista, int id){
 
     actual->siguiente = NULL;
     return actual;
+}
+
+void MostrarLista(Nodo *lista) {
+    Nodo *auxiliar = lista;
+    if (!auxiliar) {
+        printf("Lista vacía.\n");
+        return;
+    }
+
+    while (auxiliar != NULL) {
+        printf("ID: %d | Descripción: %s | Duración: %d minutos\n",
+               auxiliar->T.TareaID,
+               auxiliar->T.descripcion,
+               auxiliar->T.duracion);
+        auxiliar = auxiliar->siguiente;
+    }
+}
+
+void TransferirTareas(Nodo **TareasPendientes, Nodo **TareasRealizadas) {
+    char opcion;
+    int id;
+
+    do {
+        printf("\nTareas pendientes actuale: \n");
+        MostrarLista(*TareasPendientes);
+
+        if(*TareasPendientes == NULL) {
+            printf("No hay tareas pendientes\n");
+            return;
+        }
+        printf("Ingrese el ID de la tarea realizada: ");
+        scanf("%d", &id);
+        Nodo *mover = QuitarTarea(TareasPendientes, id);
+
+        if(mover != NULL) {
+            InsertarNodo(TareasRealizadas, mover);
+            printf("\nTarea de ID: %d movida a tareas realizadas, id");
+        } else {
+            printf("No se encontró la tarea con ID: %d\n", id);
+        }
+        printf("\nMas tareas realizadas? (s/n): ");
+
+    }while(opcion == 's' || opcion == 'S');
+
+}
+
+void LiberarLista(Nodo *lista) {
+    Nodo *auxiliar;
+    while (lista != NULL) {
+        auxiliar = lista;
+        lista = lista->siguiente;
+        free(auxiliar->T.descripcion);
+        free(auxiliar);
+    }
 }
