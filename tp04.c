@@ -31,3 +31,8 @@ Nodo *CrearNodo(int id, const char *descripcion, int duracion) {
     nuevo->siguiente = NULL;
     return nuevo;
 }
+
+void InsertarNodo(Nodo ** lista, Nodo *nuevo) {
+    nuevo->siguiente = *lista;
+    *lista = nuevo;
+}
